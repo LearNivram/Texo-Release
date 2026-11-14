@@ -15,15 +15,80 @@ Statt der Option geht auch `"docker": true` in der `texo.json`; dann schreibt je
 Es wird bei jedem Build neu erzeugt (wie alles in `dist/`). Wer es von Hand anpassen will, kopiert es aus `dist/`
 heraus und baut mit `docker build -f Dockerfile.eigen dist`.
 
+**Am schnellsten mit allem Drum und Dran:** `texo container` fragt nach dem Containerdienst (Docker oder Podman),
+baut das Projekt, schreibt eine fertige Compose-Datei mit Datenbank, Valkey und Mail-Testpostfach und startet auf
+Wunsch alles gleich – siehe [texo container](#texo-container).
+
 ## Inhalt
 
-1. [Was im Image steckt](#was-im-image-steckt)
-2. [Konfiguration zur Laufzeit](#konfiguration-zur-laufzeit)
-3. [Datenbank und Volume](#datenbank-und-volume)
-4. [Backend Texo: woher `texo-server` kommt](#backend-texo-woher-texo-server-kommt)
-5. [Mehrere Architekturen (amd64 und arm64)](#mehrere-architekturen-amd64-und-arm64)
-6. [Health-Check](#health-check)
-7. [Docker Compose](#docker-compose)
+1. [texo container](#texo-container)
+2. [Was im Image steckt](#was-im-image-steckt)
+3. [Konfiguration zur Laufzeit](#konfiguration-zur-laufzeit)
+4. [Datenbank und Volume](#datenbank-und-volume)
+5. [Backend Texo: woher `texo-server` kommt](#backend-texo-woher-texo-server-kommt)
+6. [Mehrere Architekturen (amd64 und arm64)](#mehrere-architekturen-amd64-und-arm64)
+7. [Health-Check](#health-check)
+8. [Docker Compose](#docker-compose)
+
+## texo container
+
+```sh
+texo container            # fragt nach Docker oder Podman, baut, schreibt container/compose.yaml, fragt „Jetzt starten?“
+texo container --start    # ohne Rückfrage bauen und starten
+texo container logs       # Log der App (logs -f app)
+texo container status     # laufende Container (ps)
+texo container stop       # anhalten und entfernen (down); die Daten in den Volumes bleiben
+```
+
+Beim ersten Aufruf fragt Texo, mit welchem Containerdienst das Projekt laufen soll, und zeigt, welcher installiert
+ist. Die Wahl steht danach in der `texo.json` (`"container": "docker"` oder `"podman"`); `--engine podman` wählt
+einmalig um und merkt sich das. Ohne Terminal (CI) nimmt Texo den ersten installierten Dienst.
+
+| Dienst | Aufruf | |
+|---|---|---|
+| Docker | `docker compose` | Docker Engine, Docker Desktop, OrbStack, Colima, Rancher Desktop |
+| Podman | `podman compose` (sonst `podman-compose`) | ohne Daemon, ohne root; alle Images haben volle Namen (`docker.io/…`), Podman fragt also nicht nach der Registry |
+
+Was `texo container` schreibt:
+
+- `dist/Dockerfile` und `dist/.dockerignore` wie `texo build --docker` (alle Optionen von `texo build` wie
+  `--no-protect` gehen durch).
+- `container/compose.yaml` – bei jedem Aufruf neu, passend zum Projekt. Eigene Ergänzungen (weitere Dienste,
+  Labels für einen Reverse Proxy, andere Ports) gehören in `container/compose.override.yaml`; Compose liest sie von
+  selbst mit.
+- `container/.env` – einmal erzeugt, danach ergänzt Texo nur fehlende Einträge: ein zufälliges `TEXO_SECRET`,
+  Datenbank-Passwörter, `APP_PORT` (Port auf dem eigenen Rechner) und `TEXO_PUBLIC_URL`. Einträge aus der `.env` des
+  Projekts (OAuth-Schlüssel, `@Config`-Werte, `TEXO_MAIL_FROM` …) kommen mit; Adressen auf `localhost` nicht, die
+  zeigen im Container auf den Container selbst (Texo nennt sie). Die Datei landet in der `.gitignore`.
+
+Welche Dienste in die Compose-Datei kommen, liest Texo aus `texo.json` und dem Quelltext:
+
+| Baustein | erkannt an | im Container |
+|---|---|---|
+| App | immer | Image aus `dist/`, Port `${APP_PORT}`, Health-Check `/__texo/health`, `restart: unless-stopped` |
+| SQLite | `database.type` `sqlite` | Volume `app-daten` unter `/app/data` |
+| PostgreSQL | `database.type` `postgres` | `postgres:17` mit Health-Check, Volume `db-daten`; die App bekommt `TEXO_DB_URL` |
+| MySQL / MariaDB | `database.type` `mysql` | `mysql:8.4` mit Health-Check, Volume `db-daten` |
+| MongoDB | `database.type` `mongodb` | `mongo:8` als Replica Set (für Transaktionen), richtet sich beim ersten Start selbst ein |
+| Valkey | `Kv.` im Quelltext, `TEXO_KV_URL` in der `.env` oder `cluster.bus: "kv"` | `valkey/valkey:8`, Volume `kv-daten`; die App bekommt `TEXO_KV_URL` |
+| Mail | `Mail.send` im Quelltext und kein `TEXO_SMTP_URL` | Mailpit als Testpostfach: alle Mails unter http://localhost:8025, nichts geht hinaus |
+| Uploads | `Files.save` im Quelltext und kein `TEXO_S3_BUCKET` | Volume `app-daten` für `data/files` |
+
+Die App startet erst, wenn Datenbank und Valkey gesund sind. Datenbank und Valkey sind nur im Netz des Projekts
+erreichbar, nicht auf dem eigenen Rechner – sie stören also nicht die Datenbank aus der `docker-compose.yml` für
+`texo dev`.
+
+**Echte Mails:** `TEXO_SMTP_URL` (und `TEXO_MAIL_FROM`) in `container/.env` eintragen; beim nächsten
+`texo container` fällt Mailpit weg. **S3 statt Platte:** `TEXO_S3_BUCKET` und die Zugangsdaten in `container/.env`.
+
+Mit `--start` (oder „Jetzt starten?“ mit Enter) ruft Texo `docker compose up -d --build` bzw. `podman compose up -d
+--build` im Ordner `container/` auf und wartet, bis die App unter `http://localhost:${APP_PORT}` antwortet. Von Hand
+geht dasselbe mit `cd container && docker compose up -d --build`.
+
+**Auf einen Server bringen:** Projekt (oder nur `dist/` und `container/`) auf den Server kopieren, dort
+`TEXO_PUBLIC_URL` in `container/.env` auf die echte Adresse setzen und `docker compose up -d --build` im Ordner
+`container/` aufrufen. HTTPS übernimmt am besten ein Reverse Proxy davor (Caddy, Traefik, nginx), dann gehört
+`TRUST_PROXY` in die `.env`.
 
 ## Was im Image steckt
 
@@ -42,7 +107,9 @@ Ein Image mit Backend Texo ist rund 65 MB groß (Server und Laufzeit, ohne Node.
   `pg`), installiert das Image sie ohne Entwicklungsabhängigkeiten (`npm install --omit=dev`, `bun install
   --production`, `deno install`).
 - Der Server läuft nicht als root (Benutzer `nonroot`, `node`, `bun` bzw. `deno`); die Programmdateien gehören root,
-  beschreibbar ist nur `data/`.
+  beschreibbar ist nur `data/` (SQLite, Uploads).
+- Alle Images stehen mit vollem Namen im Dockerfile (`docker.io/library/node:…`), damit auch Podman sie ohne
+  Rückfrage findet.
 - Das Image setzt `TEXO_ENV=production` (Backend Texo) bzw. `NODE_ENV=production`. Ohne `TEXO_SECRET` startet der
   Server deshalb nicht.
 - `.dockerignore` hält `.env`, eine lokale `data/` und `node_modules/` aus dem Image heraus; Zugangsdaten gibst du
@@ -138,6 +205,8 @@ siehe [Backend und Sicherheit](backend.md#entwickeln-bauen-starten-https)). `doc
 - statisch: `wget` auf die Startseite.
 
 ## Docker Compose
+
+Fertig erzeugt von [`texo container`](#texo-container); von Hand sieht das Wesentliche so aus:
 
 ```yaml
 services:

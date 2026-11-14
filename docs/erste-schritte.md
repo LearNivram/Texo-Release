@@ -53,7 +53,7 @@ cd mein-projekt
 texo dev                    # http://localhost:3000, lädt bei jeder Änderung neu
 ```
 
-`texo init` bietet fünf Beispiele an (direkt wählbar mit `--example`):
+`texo init` bietet sechs Beispiele an (direkt wählbar mit `--example`):
 
 | Beispiel | Inhalt | braucht |
 |---|---|---|
@@ -62,6 +62,11 @@ texo dev                    # http://localhost:3000, lädt bei jeder Änderung n
 | `api` | **Nur Backend**: eine Notizen-API ohne Webseite, für Apps, Skripte und andere Server, mit Tests ([mehr](backend.md#nur-backend-ohne-webseite)) | Backend (Datenbank freiwillig) |
 | `aufgaben` | Registrieren, Anmelden (`@Auth`), jeder sieht nur seine eigenen Aufgaben, mit Tests | Backend und Datenbank |
 | `chat` | Beitreten mit Namen, Nachrichten in der Datenbank, mit Tests | Backend und Datenbank |
+| `umfrage` | **Live-Umfrage** mit `Kv`: Stimmen als Zähler in Valkey, gemeinsamer `@Cache`, Ergebnisse live auf allen Seiten, `@RateLimit`, mit Tests ([mehr](backend.md#valkey-bei-texo-init)) | Backend (Valkey freiwillig) |
+
+Bei jedem Projekt mit Backend fragt `texo init` außerdem, ob **Valkey** dazukommen soll (direkt: `--kv valkey`).
+Dann stehen `TEXO_KV_URL` in `.env` und ein Valkey-Dienst in `docker-compose.yml`, und `Kv`, `@Cache`, `@RateLimit`
+und Kanäle mit `topic:` laufen über Valkey, gemeinsam für alle Instanzen und andere Programme.
 
 Jedes Projekt hat dieselbe Ordnerstruktur. So sieht man von Anfang an, wohin was gehört:
 
@@ -615,6 +620,8 @@ texo start          # Backend texo: Server starten (PORT, TEXO_SECRET, TLS_CERT/
   (`npm start`). Für Produktion `TEXO_SECRET` setzen.
 - **Als Docker-Image:** `texo build --docker` schreibt zusätzlich ein `Dockerfile`; dann
   `docker build -t meine-app dist && docker run -p 3000:3000 -e TEXO_SECRET=… meine-app` ([Docker](docker.md)).
+- **Mit Datenbank & Co. im Container:** `texo container` fragt nach Docker oder Podman, schreibt eine fertige
+  `compose.yaml` (App, Datenbank, Valkey, Mailpit) und startet alles auf Wunsch gleich ([texo container](docker.md#texo-container)).
 - `texo build` liefert den Browser-Code **minifiziert und verschleiert** aus ([Details](compiler.md#code-schutz-minifizierung-und-verschleierung));
   `texo build --no-protect` für lesbaren Code.
 

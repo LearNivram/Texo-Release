@@ -100,6 +100,11 @@ this.notes.value = await NotesApi.offene()
 
 Der Browser erhält davon nur einen Stub; Logik und Geheimnisse bleiben auf dem Server.
 
+## Neu in 0.3.0
+
+- **[`texo container`](./docker.md#texo-container)**: Docker oder Podman wählen, Texo schreibt `compose.yaml` mit Datenbank, Valkey und Mailpit und startet alles auf Wunsch gleich
+- **[Valkey bei `texo init`](./projekt-anlegen.md#valkey)** und das neue Beispiel **[`umfrage`](./projekt-anlegen.md#die-beispiele)**, eine Live-Umfrage mit [Kv](./kv.md)
+
 ## Neu in 0.2.0
 
 - **[Kv: Valkey und Redis](./kv.md)**: Cache, Zähler, Kanäle und Sitzungen gemeinsam mit anderen Programmen, zum Beispiel einem Go-Server

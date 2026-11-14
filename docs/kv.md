@@ -25,6 +25,10 @@ Konfigurationsdatei: Eine Umgebungsvariable reicht.
 
 ## Schnellstart
 
+**Neues Projekt?** `texo init meine-app --kv valkey` richtet alles ein: `TEXO_KV_URL` in `.env` und Valkey in der
+`docker-compose.yml` ([Projekt anlegen](./projekt-anlegen.md#valkey)). Ein fertiges Beispiel bringt
+`texo init umfrage --example umfrage --kv valkey` mit, eine Live-Umfrage mit Zählern, gemeinsamem Cache und Kanal.
+
 **1. Valkey starten**, zum Beispiel mit Docker:
 
 ```sh
