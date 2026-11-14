@@ -9,6 +9,7 @@ Ein neues Projekt legst du mit `texo init` an. Ohne Optionen fragt Texo nacheina
 1. **Womit möchtest du starten?** Ein Beispiel als Ausgangspunkt (siehe [unten](#die-beispiele)).
 2. **Welches Backend soll das Projekt verwenden?** Node.js, Texo, Bun, Deno oder keins.
 3. **Welche Datenbank soll das Projekt verwenden?** SQLite, PostgreSQL, MySQL/MariaDB, MongoDB oder keine.
+4. **Soll Valkey dazukommen?** Nur bei Projekten mit Backend, siehe [Valkey](#valkey).
 
 Eine leere Eingabe nimmt jeweils den ersten Vorschlag. Fragen, die nicht passen, entfallen: ein reines
 Oberflächen-Beispiel fragt nicht nach einer Datenbank, und Beispiele, die einen Server brauchen, bieten „kein Backend“
@@ -21,6 +22,14 @@ cd meine-app
 texo dev
 ```
 
+## Valkey
+
+Bei jedem Projekt mit Backend fragt `texo init`, ob **Valkey** dazukommen soll (direkt: `--kv valkey`, ohne:
+`--kv none`). Mit Valkey stehen `TEXO_KV_URL=valkey://localhost:6379` in `.env` und `.env.example` und ein Dienst
+`valkey/valkey:8` in `docker-compose.yml`; mit einer Datenbank landen beide in derselben Datei. `docker compose up -d`
+startet sie. Danach laufen [`Kv`](./kv.md), `@Cache(shared: true)`, `@RateLimit` und Kanäle mit `topic:` über Valkey,
+gemeinsam für alle Instanzen und andere Programme. Ohne Valkey arbeitet `Kv` im Arbeitsspeicher.
+
 ## Ohne Rückfragen
 
 Alle Antworten lassen sich auch als Optionen übergeben, etwa in Skripten oder in der CI:
@@ -29,13 +38,15 @@ Alle Antworten lassen sich auch als Optionen übergeben, etwa in Skripten oder i
 texo init meine-app --example aufgaben --backend texo --db sqlite
 texo init website --example website --backend static
 texo init api --example api --backend node --db postgres --no-install
+texo init umfrage --example umfrage --backend texo --kv valkey
 ```
 
 | Option | Werte |
 |---|---|
-| `--example` | `start`, `website`, `api`, `aufgaben`, `chat` |
+| `--example` | `start`, `website`, `api`, `aufgaben`, `chat`, `umfrage` |
 | `--backend` | `texo`, `node`, `bun`, `deno`, `static` (kein Backend) |
 | `--db` | `sqlite`, `postgres`, `mysql`, `mongodb`, `none` |
+| `--kv` | `valkey`, `none` (nur mit Backend) |
 | `--no-install` | bei Node.js, Bun und Deno kein `npm install` ausführen (Treiber später selbst installieren) |
 | `--library` | eine [Bibliothek](#bibliothek-anlegen) statt einer App anlegen |
 
@@ -51,6 +62,7 @@ Ohne `ordner` legt `texo init` das Projekt im aktuellen Ordner an. Ein versehent
 | `api` | nur Backend, ohne Webseite: eine Notizen-API für Apps, Skripte und andere Server | Backend |
 | `aufgaben` | Registrieren, Anmelden mit [`@Auth`](./backend.md#anmeldung-auth), eigene Aufgaben in der Datenbank | Backend und Datenbank |
 | `chat` | Beitreten mit Namen, Nachrichten in der Datenbank | Backend und Datenbank |
+| `umfrage` | Live-Umfrage mit [Kv](./kv.md): Stimmen als Zähler, gemeinsamer `@Cache`, Ergebnisse live auf allen Seiten, `@RateLimit` über alle Instanzen, mit Tests. Läuft ohne Valkey im Speicher. | Backend (Valkey freiwillig) |
 
 So sieht zum Beispiel `aufgaben` mit Backend Texo und SQLite aus:
 

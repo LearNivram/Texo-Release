@@ -6,6 +6,31 @@ Jede Version wird mit jedem Push auf `main` neu gebaut und als `v<version>-build
 (https://github.com/LearNivram/Texo-Release/releases). Hier steht, was eine Version gegenüber der vorigen neu hat;
 die Release-Notizen übernehmen den Abschnitt ihrer Version.
 
+## 0.3.0
+
+### Neu
+
+- **`texo container`**: Docker oder Podman wählen (gemerkt in `texo.json` unter `"container"`), bauen und
+  `container/compose.yaml` mit allem erzeugen, was das Projekt braucht: PostgreSQL, MySQL, MongoDB oder SQLite, Valkey
+  bei `Kv`, Mailpit als Testpostfach bei `Mail.send`, ein Volume für Uploads. `container/.env` bekommt ein zufälliges
+  `TEXO_SECRET` und Datenbank-Passwörter. `texo container --start` startet direkt und wartet auf `/__texo/health`;
+  dazu `logs`, `status` und `stop` (#100).
+- **Valkey bei `texo init`**: Projekte mit Backend fragen „Soll Valkey dazukommen?“ (oder `--kv valkey` / `--kv none`).
+  Mit Valkey kommen `TEXO_KV_URL` in `.env` und ein Valkey-Dienst in `docker-compose.yml` (#99).
+- **Beispiel `umfrage`**: eine Live-Umfrage mit `Kv`. Stimmen als Zähler, Ergebnis als gemeinsamer `@Cache`, live über
+  `Channel(topic:)`, `@RateLimit` über alle Instanzen; läuft ohne Valkey im Speicher (#99).
+
+### Verbessert
+
+- Dockerfiles aus `texo build --docker` nennen Images mit vollem Namen (`docker.io/…`), damit Podman nicht nach der
+  Registry fragt; `data/` ist immer für den Server-Benutzer beschreibbar, auch für Uploads ohne SQLite (#100).
+- Build-Nummern der Releases: 400 + Pipeline-Nummer, damit Woodpecker-Builds über den von Hand gebauten Releases
+  `v0.2.0-build.300` und `v0.3.0-build.400` liegen (#98).
+
+### Behoben
+
+- Doku: das `@Cache`-Beispiel in `docs/backend.md` nutzt `DateTime.now().toIso()` (`toString()` gibt es nicht).
+
 ## 0.2.0
 
 ### Neu

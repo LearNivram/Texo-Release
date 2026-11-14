@@ -35,6 +35,7 @@ Optionen schreibst du als `--port 4000` oder `--port=4000`. Optionen auf der Kom
 | [`texo build`](#texo-build) | Projekt für die Auslieferung übersetzen |
 | [`texo start`](#texo-start) | gebaute App mit dem eingebauten Server starten |
 | [`texo serve`](#texo-serve) | einen Ordner statisch ausliefern |
+| [`texo container`](#texo-container) | App mit Datenbank, Valkey und Mail in Docker oder Podman starten |
 | [`texo test`](#texo-test) | Tests aus `tests/` ausführen |
 | [`texo fmt`](#texo-fmt) | Quelltext einheitlich formatieren |
 | [`texo responsive`](#texo-responsive) | Seiten fürs Handy prüfen und umschreiben |
@@ -56,14 +57,15 @@ Wo ein Befehl einen `pfad` nimmt, ist das ein Ordner (alle `.texo`-Dateien darin
 ### texo init
 
 ```text
-texo init [ordner] [--example start|website|api|aufgaben|chat]
+texo init [ordner] [--example start|website|api|aufgaben|chat|umfrage]
                    [--backend node|texo|bun|deno|static]
                    [--db sqlite|postgres|mysql|mongodb|none]
+                   [--kv valkey|none]
                    [--no-install]
 texo init [ordner] --library
 ```
 
-Legt ein neues Projekt an. Ohne Optionen fragt `texo init` im Terminal nach Beispiel, Backend und Datenbank; mit
+Legt ein neues Projekt an. Ohne Optionen fragt `texo init` im Terminal nach Beispiel, Backend, Datenbank und Valkey; mit
 Optionen läuft es ohne Rückfragen (zum Beispiel in Skripten). `--no-install` überspringt `npm install` bei den
 Backends Node.js, Bun und Deno. `--library` legt statt einer App ein
 [Bibliotheksprojekt](./bibliotheken.md) an.
@@ -130,6 +132,19 @@ texo start [dist]
 Startet eine mit dem Backend `texo` gebaute App im eingebauten nativen Server. Das ist dasselbe wie
 `texo-server dist/server/app.json`. Apps mit Node.js, Bun oder Deno startest du mit `cd dist && npm start`.
 Konfiguriert wird der Server über Umgebungsvariablen, siehe [Backend](./backend.md#sessions-passwörter-umgebungsvariablen).
+
+### texo container
+
+```text
+texo container [stop|logs|status] [--engine docker|podman] [--start|--no-start]
+```
+
+Fragt beim ersten Mal nach dem Containerdienst (Docker oder Podman, gemerkt in `texo.json` unter `"container"`), baut
+wie `texo build --docker` und schreibt `container/compose.yaml` und `container/.env`: dazu kommen je nach Projekt
+die Datenbank, Valkey (bei `Kv`), Mailpit als Testpostfach (bei `Mail.send`) und ein Volume für Uploads. Danach fragt
+es „Jetzt starten?“; `--start` startet ohne Rückfrage und wartet auf den Health-Check. `logs`, `status` und `stop`
+reichen an `compose logs -f`, `ps` und `down` weiter. Alles Weitere steht unter
+[Docker](./docker.md#texo-container).
 
 ### texo serve
 

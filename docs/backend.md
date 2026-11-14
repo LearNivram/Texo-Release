@@ -1419,6 +1419,29 @@ Ohne `TEXO_KV_URL` liegt alles im Speicher dieser Instanz, mit denselben Befehle
 Ein vollständiges Beispiel mit Go-Dienst (Cache, Bestände, Live-Buchungen, Sitzungen) liegt in
 [`examples/lager-go`](beispiele/lager-go.md).
 
+### Valkey bei `texo init`
+
+Bei jedem Projekt mit Backend fragt `texo init`, ob Valkey dazukommen soll (direkt: `--kv valkey`, ohne: `--kv none`).
+Dann schreibt es `TEXO_KV_URL=valkey://localhost:6379` in `.env` und `.env.example` und einen Valkey-Dienst in
+`docker-compose.yml`, neben einer Datenbank, falls eine gewählt ist:
+
+```sh
+texo init umfrage --example umfrage --backend texo --kv valkey
+cd umfrage && docker compose up -d && texo dev
+```
+
+Das Beispiel **Live-Umfrage** (`--example umfrage`) zeigt `Kv` als Baustein einer normalen Anwendung:
+
+- Jede Antwort ist ein Zähler (`Kv.increment("umfrage:stimmen:Go")`), gelesen mit `Kv.getMany`.
+- Das Ergebnis liegt als `@Cache(shared: true, key: "umfrage:ergebnis")` für alle Instanzen gemeinsam, `@Invalidates`
+  leert es nach jeder Stimme.
+- `Channel(topic: "umfrage:ergebnis")` schickt neue Ergebnisse live an alle offenen Seiten, auch auf anderen
+  Instanzen. Jedes andere Programm liest mit `SUBSCRIBE umfrage:ergebnis` mit.
+- `@RateLimit` zählt über alle Instanzen, die Sitzung merkt sich die eigene Stimme.
+- Ein Besuchszähler je Tag verschwindet mit `Kv.expire` nach 24 Stunden von selbst.
+
+Ohne Valkey läuft dasselbe Beispiel im Speicher der Instanz, auch in `texo test`.
+
 ### Kanäle mit anderen Programmen (`Channel(topic:)`)
 
 ```texo
@@ -1492,7 +1515,7 @@ service Katalog {
 
     // bleibt im Arbeitsspeicher dieser Instanz, auch mit Kv
     @Cache(ttl: 5.s, local: true)
-    async fn uhrzeit(): String => DateTime.now().toString()
+    async fn uhrzeit(): String => DateTime.now().toIso()
 }
 ```
 
@@ -2131,6 +2154,7 @@ texo build               # dist/public (Browser) + dist/server (Backend) + dist/
 cd dist && npm start     # Node, Bun oder Deno: startet dist/server/main.js (ohne Texo-CLI, z. B. auf dem Server)
 texo start               # Backend texo: startet den nativen Server (ohne Texo-CLI: texo-server dist/server/app.json)
 texo build --docker      # zusätzlich dist/Dockerfile: docker build -t meine-app dist (siehe docker.md)
+texo container           # Docker oder Podman: Dockerfile + compose.yaml mit Datenbank, Valkey, Mail; auf Wunsch gleich starten
 ```
 
 Konfiguration zur Laufzeit:
