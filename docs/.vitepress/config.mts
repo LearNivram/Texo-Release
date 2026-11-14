@@ -38,7 +38,7 @@ export default defineConfig({
     nav: [
       { text: 'Loslegen', link: '/erste-schritte', activeMatch: '^/(installation|erste-schritte|tutorial|projekt-anlegen)' },
       { text: 'Sprache', link: '/sprachreferenz', activeMatch: '^/(sprachreferenz|reaktivitaet|ui-und-styling|css-in-texo|uebersetzungen)' },
-      { text: 'Backend', link: '/backend', activeMatch: '^/(backend|datenbank|docker)' },
+      { text: 'Backend', link: '/backend', activeMatch: '^/(backend|datenbank|kv|docker)' },
       { text: 'Referenz', link: '/api-referenz', activeMatch: '^/(api-referenz|kommandozeile|fehlermeldungen|compiler)' },
       { text: 'Beispiele', link: '/beispiele/', activeMatch: '^/beispiele' },
       {
@@ -75,6 +75,7 @@ export default defineConfig({
         items: [
           { text: 'Backend und Sicherheit', link: '/backend' },
           { text: 'Datenbanken (Texo Data)', link: '/datenbank' },
+          { text: 'Kv: Valkey und Redis', link: '/kv' },
           { text: 'Docker', link: '/docker' },
         ],
       },

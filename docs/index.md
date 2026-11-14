@@ -100,6 +100,16 @@ this.notes.value = await NotesApi.offene()
 
 Der Browser erhält davon nur einen Stub; Logik und Geheimnisse bleiben auf dem Server.
 
+## Neu in 0.2.0
+
+- **[Kv: Valkey und Redis](./kv.md)**: Cache, Zähler, Kanäle und Sitzungen gemeinsam mit anderen Programmen, zum Beispiel einem Go-Server
+- **[Reines Backend](./projekt-anlegen.md#die-beispiele)**: APIs ohne Webseite mit `texo init --example api`
+- **[Anmeldung über GitHub, Google, Microsoft und GitLab](./backend.md#anmelden-mit-github-google-microsoft-oder-gitlab-oauth)**, **[Datei-Uploads](./backend.md#dateien-hochladen-upload-und-files)** und **[E-Mails](./backend.md#e-mails-verschicken-mail-und-tokens)**
+- **[Volltextsuche, Live-Abfragen und Zugriffsregeln](./datenbank.md)** in Texo Data
+- **[`texo build --docker`](./docker.md)** und **[`texo responsive`](./kommandozeile.md#texo-responsive)**
+
+Alles Weitere steht in den [Änderungen](./changelog.md).
+
 ## In 60 Sekunden
 
 ::: code-group

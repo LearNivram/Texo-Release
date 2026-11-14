@@ -5,7 +5,7 @@
 //
 // Quelle der Wahrheit bleibt das Hauptrepo: docs/*.md, CHANGELOG.md, examples/ und die Grammatik aus
 // editors/vscode. Die übernommenen Seiten werden hier überschrieben, also bitte im Hauptrepo ändern und dann neu
-// übernehmen. Von Hand gepflegt (und hier nicht angefasst) sind: index.md, kommandozeile.md, projekt-anlegen.md,
+// übernehmen. Von Hand gepflegt (und hier nicht angefasst) sind: index.md, kommandozeile.md, projekt-anlegen.md, kv.md,
 // beispiele/index.md und alles unter .vitepress/.
 
 import fs from 'node:fs'
@@ -134,8 +134,17 @@ const TITEL = {
   'ui-und-styling.md': 'UI und Styling',
 }
 
+// Hinweise auf eigene Seiten der Website, die es im Hauptrepo nicht gibt
+const HINWEISE = [
+  [
+    /^(## Gemeinsamer Speicher mit anderen Programmen \(`Kv`\)\n)/m,
+    '$1\n::: tip Eigene Seite\nAlles zu Kv mit Schnellstart, API, Go-Beispielen und Betrieb steht gesammelt auf\n[Kv: Valkey und Redis](kv.md).\n:::\n',
+  ],
+]
+
 function umschreiben(text, datei) {
   for (const [muster, ersatz] of LINKS) text = text.replace(muster, ersatz)
+  for (const [muster, ersatz] of HINWEISE) text = text.replace(muster, ersatz)
   text = text.replace(/\[(?:docs\/)?([a-z-]+\.md)\]\(/g, (ganz, name) => (TITEL[name] ? `[${TITEL[name]}](` : ganz))
   text = spitzeKlammern(text)
   const rest = text.match(/\]\(\.\.\/[^)]*\)/g)

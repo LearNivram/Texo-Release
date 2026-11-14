@@ -133,7 +133,7 @@ Die vollständige Dokumentation liegt unter **[learnivram.github.io/Texo-Release
 
 - [Erste Schritte](https://learnivram.github.io/Texo-Release/erste-schritte) und das [Tutorial](https://learnivram.github.io/Texo-Release/tutorial) (Notizbuch mit Konto, Datenbank und Bildern)
 - [Sprachreferenz](https://learnivram.github.io/Texo-Release/sprachreferenz), [UI und Styling](https://learnivram.github.io/Texo-Release/ui-und-styling), [Reaktivität und Routing](https://learnivram.github.io/Texo-Release/reaktivitaet)
-- [Backend und Sicherheit](https://learnivram.github.io/Texo-Release/backend), [Datenbanken](https://learnivram.github.io/Texo-Release/datenbank), [Docker](https://learnivram.github.io/Texo-Release/docker)
+- [Backend und Sicherheit](https://learnivram.github.io/Texo-Release/backend), [Datenbanken](https://learnivram.github.io/Texo-Release/datenbank), [Kv: Valkey und Redis](https://learnivram.github.io/Texo-Release/kv), [Docker](https://learnivram.github.io/Texo-Release/docker)
 - [Kommandozeile](https://learnivram.github.io/Texo-Release/kommandozeile), [Standardbibliothek](https://learnivram.github.io/Texo-Release/api-referenz), [Fehlermeldungen](https://learnivram.github.io/Texo-Release/fehlermeldungen)
 
 Die Seiten entstehen aus dem Ordner [`docs/`](docs) dieses Repos (VitePress) und werden bei jeder Änderung auf `main`

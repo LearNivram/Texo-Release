@@ -1344,6 +1344,11 @@ nicht.
 
 ## Gemeinsamer Speicher mit anderen Programmen (`Kv`)
 
+::: tip Eigene Seite
+Alles zu Kv mit Schnellstart, API, Go-Beispielen und Betrieb steht gesammelt auf
+[Kv: Valkey und Redis](kv.md).
+:::
+
 `@Cache` gehört einer Texo-Anwendung allein. Arbeitet sie mit einem anderen Programm zusammen, zum Beispiel einem
 Go-Server, teilen sich beide mit `Kv` einen Schlüssel-Wert-Speicher: Valkey, Redis, KeyDB oder Dragonfly. Beide
 lesen und schreiben dieselben Schlüssel, Zähler und Hashes und schicken sich Nachrichten über Pub/Sub.
