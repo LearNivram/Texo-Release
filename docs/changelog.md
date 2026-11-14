@@ -24,7 +24,8 @@ die Release-Notizen übernehmen den Abschnitt ihrer Version.
 
 - Dockerfiles aus `texo build --docker` nennen Images mit vollem Namen (`docker.io/…`), damit Podman nicht nach der
   Registry fragt; `data/` ist immer für den Server-Benutzer beschreibbar, auch für Uploads ohne SQLite (#100).
-- Die Build-Nummern der Releases starten nach dem Release `v0.2.0-build.300` bei 300 + Pipeline-Nummer (#98).
+- Build-Nummern der Releases: 400 + Pipeline-Nummer, damit Woodpecker-Builds über den von Hand gebauten Releases
+  `v0.2.0-build.300` und `v0.3.0-build.400` liegen (#98).
 
 ### Behoben
 
