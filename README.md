@@ -8,8 +8,9 @@ Oberfläche, Design, Backend und Datenbank in einer statisch typisierten Sprache
 [![Neuestes Release](https://img.shields.io/github/v/release/LearNivram/Texo-Release?label=Release&color=6366f1&style=for-the-badge)](https://github.com/LearNivram/Texo-Release/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/LearNivram/Texo-Release/total?label=Downloads&color=ec4899&style=for-the-badge)](https://github.com/LearNivram/Texo-Release/releases)
 ![Plattformen](https://img.shields.io/badge/Linux%20·%20macOS%20·%20Windows-22c55e?style=for-the-badge)
+[![Dokumentation](https://img.shields.io/badge/Dokumentation-lesen-0ea5e9?style=for-the-badge)](https://learnivram.github.io/Texo-Release/)
 
-[Installieren](#-installieren) · [In 60 Sekunden](#-in-60-sekunden) · [Was Texo kann](#-was-texo-kann) · [Editoren](#-editoren) · [Downloads](#-was-im-release-steckt)
+[📖 Dokumentation](https://learnivram.github.io/Texo-Release/) · [Installieren](#-installieren) · [In 60 Sekunden](#-in-60-sekunden) · [Was Texo kann](#-was-texo-kann) · [Editoren](#-editoren) · [Downloads](#-was-im-release-steckt)
 
 </div>
 
@@ -126,6 +127,18 @@ Der Browser bekommt nur einen Stub. Logik, Zugangsdaten und Datenbank bleiben au
 
 Beide nutzen den Sprachserver `texo lsp`: Fehler direkt beim Tippen, Autovervollständigung und Hover.
 
+## 📖 Dokumentation
+
+Die vollständige Dokumentation liegt unter **[learnivram.github.io/Texo-Release](https://learnivram.github.io/Texo-Release/)**:
+
+- [Erste Schritte](https://learnivram.github.io/Texo-Release/erste-schritte) und das [Tutorial](https://learnivram.github.io/Texo-Release/tutorial) (Notizbuch mit Konto, Datenbank und Bildern)
+- [Sprachreferenz](https://learnivram.github.io/Texo-Release/sprachreferenz), [UI und Styling](https://learnivram.github.io/Texo-Release/ui-und-styling), [Reaktivität und Routing](https://learnivram.github.io/Texo-Release/reaktivitaet)
+- [Backend und Sicherheit](https://learnivram.github.io/Texo-Release/backend), [Datenbanken](https://learnivram.github.io/Texo-Release/datenbank), [Docker](https://learnivram.github.io/Texo-Release/docker)
+- [Kommandozeile](https://learnivram.github.io/Texo-Release/kommandozeile), [Standardbibliothek](https://learnivram.github.io/Texo-Release/api-referenz), [Fehlermeldungen](https://learnivram.github.io/Texo-Release/fehlermeldungen)
+
+Die Seiten entstehen aus dem Ordner [`docs/`](docs) dieses Repos (VitePress) und werden bei jeder Änderung auf `main`
+neu veröffentlicht. Lokal ansehen: `npm ci && npm run docs:dev`.
+
 ## 📥 Was im Release steckt
 
 | Datei | Inhalt |
@@ -143,6 +156,6 @@ Ohne Installer: Datei für dein System und `SHA256SUMS.txt` laden, Summe prüfen
 
 <div align="center">
 
-Dieses Repository enthält nur die fertigen Releases von Texo. Jedes Release wird automatisch gebaut und getestet.
+Dieses Repository enthält die fertigen Releases und die Dokumentation von Texo. Jedes Release wird automatisch gebaut und getestet.
 
 </div>

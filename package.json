@@ -1,0 +1,16 @@
+{
+  "name": "texo-docs",
+  "private": true,
+  "type": "module",
+  "description": "Dokumentation von Texo (GitHub Pages)",
+  "scripts": {
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs",
+    "docs:uebernehmen": "node scripts/docs-uebernehmen.mjs"
+  },
+  "devDependencies": {
+    "github-slugger": "2.0.0",
+    "vitepress": "1.6.4"
+  }
+}

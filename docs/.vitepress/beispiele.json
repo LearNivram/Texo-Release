@@ -1,0 +1,37 @@
+[
+  {
+    "id": "starter",
+    "titel": "Starter",
+    "text": "Das leere Startprojekt: eine Seite, ein Zustand, eine eigene Komponente."
+  },
+  {
+    "id": "todo",
+    "titel": "Aufgabenliste",
+    "text": "Zustand, Listen, Filter und eigene Komponenten, ganz ohne Backend."
+  },
+  {
+    "id": "dashboard",
+    "titel": "Dashboard",
+    "text": "Mehrere Seiten mit Router, Seitenleiste, Diagramm-Kacheln und Design-Tokens."
+  },
+  {
+    "id": "landing",
+    "titel": "Landingpage",
+    "text": "Eine gestaltete Produktseite mit Verläufen, Animationen und Preistabelle."
+  },
+  {
+    "id": "fullstack",
+    "titel": "Full-Stack",
+    "text": "Anmeldung, Routen-Wächter und eine Notizen-API mit Node.js-Backend."
+  },
+  {
+    "id": "lager-go",
+    "titel": "Lager mit Go",
+    "text": "Texo und ein Go-Dienst teilen sich über Valkey Bestand, Cache, Kanäle und Sitzungen."
+  },
+  {
+    "id": "spec",
+    "titel": "MetricCard",
+    "text": "Die Karte aus der Sprachbeschreibung: State, Methoden, Hover und Verläufe."
+  }
+]
