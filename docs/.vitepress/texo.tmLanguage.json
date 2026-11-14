@@ -1,0 +1,371 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Texo",
+  "scopeName": "source.texo",
+  "fileTypes": ["texo"],
+  "patterns": [{ "include": "#code" }],
+  "repository": {
+    "code": {
+      "patterns": [
+        { "include": "#comments" },
+        { "include": "#strings" },
+        { "include": "#annotation" },
+        { "include": "#declarations" },
+        { "include": "#numbers" },
+        { "include": "#keywords" },
+        { "include": "#escaped-identifier" },
+        { "include": "#named-argument" },
+        { "include": "#calls" },
+        { "include": "#types" },
+        { "include": "#member-access" },
+        { "include": "#operators" },
+        { "include": "#punctuation" }
+      ]
+    },
+
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.block.documentation.texo",
+          "begin": "/\\*\\*(?!/)",
+          "end": "\\*/",
+          "beginCaptures": { "0": { "name": "punctuation.definition.comment.texo" } },
+          "endCaptures": { "0": { "name": "punctuation.definition.comment.texo" } },
+          "patterns": [{ "include": "#doc-inline" }]
+        },
+        {
+          "name": "comment.block.texo",
+          "begin": "/\\*",
+          "end": "\\*/",
+          "beginCaptures": { "0": { "name": "punctuation.definition.comment.texo" } },
+          "endCaptures": { "0": { "name": "punctuation.definition.comment.texo" } }
+        },
+        {
+          "name": "comment.line.documentation.texo",
+          "begin": "///",
+          "end": "(?=$)",
+          "beginCaptures": { "0": { "name": "punctuation.definition.comment.texo" } },
+          "patterns": [{ "include": "#doc-inline" }]
+        },
+        {
+          "name": "comment.line.double-slash.texo",
+          "match": "(//).*$",
+          "captures": { "1": { "name": "punctuation.definition.comment.texo" } }
+        }
+      ]
+    },
+
+    "doc-inline": {
+      "patterns": [
+        {
+          "name": "markup.inline.raw.texo",
+          "match": "`[^`\\n]*`"
+        },
+        {
+          "match": "(@(?:param|returns?|see|throws|since|deprecated))\\b",
+          "captures": { "1": { "name": "keyword.other.documentation.texo" } }
+        }
+      ]
+    },
+
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.triple.texo",
+          "begin": "\"\"\"",
+          "end": "\"\"\"",
+          "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.texo" } },
+          "endCaptures": { "0": { "name": "punctuation.definition.string.end.texo" } },
+          "patterns": [
+            { "include": "#string-escapes" },
+            { "include": "#interpolation" }
+          ]
+        },
+        {
+          "name": "string.quoted.double.texo",
+          "begin": "\"",
+          "end": "\"|(?=$)",
+          "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.texo" } },
+          "endCaptures": { "0": { "name": "punctuation.definition.string.end.texo" } },
+          "patterns": [
+            { "include": "#string-escapes" },
+            { "include": "#interpolation" }
+          ]
+        },
+        {
+          "name": "string.quoted.single.texo",
+          "begin": "'",
+          "end": "'|(?=$)",
+          "beginCaptures": { "0": { "name": "punctuation.definition.string.begin.texo" } },
+          "endCaptures": { "0": { "name": "punctuation.definition.string.end.texo" } },
+          "patterns": [{ "include": "#string-escapes" }]
+        }
+      ]
+    },
+
+    "string-escapes": {
+      "patterns": [
+        {
+          "name": "constant.character.escape.texo",
+          "match": "\\\\(?:[ntr0\\\\\"'$]|u\\{[0-9a-fA-F]+\\}|u[0-9a-fA-F]{4})"
+        },
+        {
+          "name": "invalid.illegal.unknown-escape.texo",
+          "match": "\\\\."
+        }
+      ]
+    },
+
+    "interpolation": {
+      "name": "meta.interpolation.texo",
+      "begin": "\\$\\{",
+      "end": "\\}",
+      "beginCaptures": { "0": { "name": "punctuation.section.embedded.begin.texo" } },
+      "endCaptures": { "0": { "name": "punctuation.section.embedded.end.texo" } },
+      "contentName": "meta.embedded.expression.texo",
+      "patterns": [
+        { "include": "#nested-braces" },
+        { "include": "#code" }
+      ]
+    },
+
+    "nested-braces": {
+      "begin": "\\{",
+      "end": "\\}",
+      "beginCaptures": { "0": { "name": "punctuation.section.braces.begin.texo" } },
+      "endCaptures": { "0": { "name": "punctuation.section.braces.end.texo" } },
+      "patterns": [
+        { "include": "#nested-braces" },
+        { "include": "#code" }
+      ]
+    },
+
+    "annotation": {
+      "match": "(@)([A-Za-z_][A-Za-z0-9_]*)",
+      "name": "meta.annotation.texo",
+      "captures": {
+        "1": { "name": "punctuation.definition.annotation.texo" },
+        "2": { "name": "storage.type.annotation.texo" }
+      }
+    },
+
+    "declarations": {
+      "patterns": [
+        {
+          "comment": "package a.b.c / import a.b.*",
+          "match": "\\b(package|import)\\s+([A-Za-z_][A-Za-z0-9_]*(?:\\.[A-Za-z_*][A-Za-z0-9_]*)*(?:\\.\\*)?)",
+          "captures": {
+            "1": { "name": "keyword.control.import.texo" },
+            "2": { "name": "entity.name.namespace.texo" }
+          }
+        },
+        {
+          "comment": "fn name / fn Type.name",
+          "match": "\\b(fn)\\s+(?:([A-Z][A-Za-z0-9_]*)\\s*(\\.)\\s*)?(`[^`\\n]+`|[A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "keyword.declaration.function.texo storage.type.function.texo" },
+            "2": { "name": "entity.name.type.texo" },
+            "3": { "name": "punctuation.accessor.texo" },
+            "4": { "name": "entity.name.function.texo" }
+          }
+        },
+        {
+          "comment": "data class Name",
+          "match": "\\b(data)\\s+(class)\\s+(`[^`\\n]+`|[A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "storage.modifier.texo" },
+            "2": { "name": "storage.type.class.texo" },
+            "3": { "name": "entity.name.type.class.texo" }
+          }
+        },
+        {
+          "comment": "component Name / class Name / enum Name / object Name",
+          "match": "\\b(component|class|enum|object|interface|service)\\s+(`[^`\\n]+`|[A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "storage.type.class.texo" },
+            "2": { "name": "entity.name.type.class.texo" }
+          }
+        },
+        {
+          "comment": "let / var / val / const name",
+          "match": "\\b(let|var|val|const)\\s+(`[^`\\n]+`|[A-Za-z_][A-Za-z0-9_]*)",
+          "captures": {
+            "1": { "name": "storage.type.variable.texo" },
+            "2": { "name": "variable.other.definition.texo" }
+          }
+        }
+      ]
+    },
+
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.hex.texo",
+          "match": "(?<!\\w)0[xX][0-9a-fA-F_]+\\b"
+        },
+        {
+          "comment": "Zahl mit Einheit: 360.px, 1.2.px, 250.ms, 100.vh",
+          "match": "(?<!\\w)(\\d[\\d_]*(?:\\.\\d[\\d_]*)?(?:[eE][+-]?\\d+)?)(\\.)([A-Za-z_][A-Za-z0-9_]*)\\b",
+          "captures": {
+            "1": { "name": "constant.numeric.texo" },
+            "2": { "name": "punctuation.accessor.texo keyword.other.unit.separator.texo" },
+            "3": { "name": "keyword.other.unit.texo" }
+          }
+        },
+        {
+          "name": "constant.numeric.float.texo",
+          "match": "(?<!\\w)\\d[\\d_]*\\.\\d[\\d_]*(?:[eE][+-]?\\d+)?\\b"
+        },
+        {
+          "name": "constant.numeric.float.texo",
+          "match": "(?<!\\w)\\d[\\d_]*[eE][+-]?\\d+\\b"
+        },
+        {
+          "name": "constant.numeric.integer.texo",
+          "match": "(?<!\\w)\\d[\\d_]*\\b"
+        }
+      ]
+    },
+
+    "keywords": {
+      "patterns": [
+        {
+          "name": "constant.language.boolean.texo",
+          "match": "\\b(true|false)\\b"
+        },
+        {
+          "name": "constant.language.null.texo",
+          "match": "\\bnull\\b"
+        },
+        {
+          "name": "variable.language.this.texo",
+          "match": "\\bthis\\b"
+        },
+        {
+          "name": "keyword.control.flow.texo",
+          "match": "\\b(if|else|for|while|break|continue|return|match|try|catch|finally|throw|await)\\b"
+        },
+        {
+          "name": "keyword.operator.word.texo",
+          "match": "\\b(in|is|as)\\b"
+        },
+        {
+          "name": "keyword.operator.new.texo",
+          "match": "\\bnew\\b"
+        },
+        {
+          "name": "storage.modifier.access.texo",
+          "match": "\\b(public|private|protected|internal)\\b"
+        },
+        {
+          "name": "storage.modifier.texo",
+          "match": "\\b(async|extern|static|data|constructor)\\b"
+        },
+        {
+          "name": "storage.type.texo",
+          "match": "\\b(component|class|enum|object|interface|service|fn|let|var|val|const)\\b"
+        },
+        {
+          "name": "keyword.control.import.texo",
+          "match": "\\b(package|import)\\b"
+        }
+      ]
+    },
+
+    "escaped-identifier": {
+      "name": "variable.other.escaped.texo",
+      "match": "`[^`\\n]+`"
+    },
+
+    "named-argument": {
+      "comment": "spacing: 16.px  /  title: String",
+      "match": "\\b([a-z_][A-Za-z0-9_]*)(?=\\s*:(?!:))",
+      "captures": {
+        "1": { "name": "variable.parameter.named.texo" }
+      }
+    },
+
+    "calls": {
+      "patterns": [
+        {
+          "comment": "obj.method(…)",
+          "match": "(?<=\\.|\\?\\.)\\s*([a-z_][A-Za-z0-9_]*)(?=\\s*(?:<[^<>()]*>)?\\s*\\()",
+          "captures": { "1": { "name": "entity.name.function.call.method.texo" } }
+        },
+        {
+          "comment": "name(…)",
+          "match": "\\b([a-z_][A-Za-z0-9_]*)(?=\\s*\\()",
+          "captures": { "1": { "name": "entity.name.function.call.texo" } }
+        }
+      ]
+    },
+
+    "types": {
+      "name": "entity.name.type.texo",
+      "match": "\\b[A-Z][A-Za-z0-9_]*\\b"
+    },
+
+    "member-access": {
+      "match": "(?<=\\.|\\?\\.)\\s*([a-z_][A-Za-z0-9_]*)\\b",
+      "captures": { "1": { "name": "variable.other.property.texo" } }
+    },
+
+    "operators": {
+      "patterns": [
+        {
+          "name": "storage.type.function.arrow.texo",
+          "match": "=>"
+        },
+        {
+          "name": "keyword.operator.range.texo",
+          "match": "\\.\\.<|\\.\\.\\.|\\.\\."
+        },
+        {
+          "name": "keyword.operator.null-safe.texo",
+          "match": "\\?\\.|\\?\\?|!!"
+        },
+        {
+          "name": "keyword.operator.assignment.compound.texo",
+          "match": "\\+=|-=|\\*=|/=|%="
+        },
+        {
+          "name": "keyword.operator.increment-decrement.texo",
+          "match": "\\+\\+|--"
+        },
+        {
+          "name": "keyword.operator.comparison.texo",
+          "match": "==|!=|<=|>=|<|>"
+        },
+        {
+          "name": "keyword.operator.logical.texo",
+          "match": "&&|\\|\\||!"
+        },
+        {
+          "name": "keyword.operator.assignment.texo",
+          "match": "="
+        },
+        {
+          "name": "keyword.operator.arithmetic.texo",
+          "match": "\\+|-|\\*|/|%"
+        },
+        {
+          "name": "keyword.operator.ternary.texo",
+          "match": "\\?"
+        },
+        {
+          "name": "punctuation.separator.colon.texo",
+          "match": ":"
+        }
+      ]
+    },
+
+    "punctuation": {
+      "patterns": [
+        { "name": "punctuation.separator.comma.texo", "match": "," },
+        { "name": "punctuation.terminator.statement.texo", "match": ";" },
+        { "name": "punctuation.accessor.texo", "match": "\\." },
+        { "name": "punctuation.section.brackets.texo", "match": "[\\[\\](){}]" }
+      ]
+    }
+  }
+}
